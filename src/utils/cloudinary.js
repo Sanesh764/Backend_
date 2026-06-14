@@ -9,7 +9,8 @@ import fs from "fs";//fs=file sysytem file ko change karna ke liye
         api_key: process.env.CLOUDINARY_CLOUD_KEY, 
         api_secret: process.env.CLOUDINARY_CLOUD_SECRET
     });
-    
+
+})();   
     const uploadOnCloudinary = async(localFilePath)=>{
         try{
             if(!localFilePath) return null;
@@ -18,7 +19,8 @@ import fs from "fs";//fs=file sysytem file ko change karna ke liye
                 resource_type:"auto"
             })
             //file has been uploded successfull
-            console.log("file is uploaded on cloudninary",response.url);
+           // console.log("file is uploaded on cloudninary",response.url);
+           fs.unlinkSync(localFilePath);
             return response;
             
         } catch(error){
@@ -26,8 +28,7 @@ import fs from "fs";//fs=file sysytem file ko change karna ke liye
             return null;
         }
     }
-    export {uploadOnCloudinary}
-
+    export {uploadOnCloudinary};
 
 
 
@@ -63,4 +64,4 @@ import fs from "fs";//fs=file sysytem file ko change karna ke liye
     // });
     
     // console.log(autoCropUrl);    
-})();
+
