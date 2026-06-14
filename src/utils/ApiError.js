@@ -4,7 +4,7 @@ class ApiError extends Error {
         stausCode,
         message="something want to wrong",
         error=[],
-        statck=""
+        stack=""
     ){
         super(message)
         this.stausCode=stausCode
