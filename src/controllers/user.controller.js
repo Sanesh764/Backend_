@@ -3,6 +3,8 @@ import {ApiError} from "../utils/ApiError.js";
 import {User} from "../models/user.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+
+// Controller function jo registration request handle karta hai.
 const registerUser = asyncHandler(async(req,res)=>{
     //get user details from frontend
     //validation-not empty
@@ -14,34 +16,62 @@ const registerUser = asyncHandler(async(req,res)=>{
     //cheak for user creation
     //return response
 
+    //Frontend se user details receive hoti hain.
     const {fullName,email,username,password}=req.body;
     console.log("email :",email);
     
+//Check karega ki koi field empty to nahi hai.
+// Example:
+// email=""
+// Result:
+// throw new ApiError(400,"All fields are required")
     if(
         [fullName,email,username,password].some((field)=>
         field?.trim()==="")
     ){
         throw new ApiError(400, "All fields are required");
     }
+    /**
+     Purpose
+
+Check karo:
+Username already exist?
+Email already exist?
+MongoDB Operator:
+$or
+Means:
+username OR email
+     */
     const existedUser=User.findOne({
         $or:[{username},{email}]
     })
     if(existedUser){
         throw new ApiError(409,"user with email or username is already exist");
     }
+
+    //multer say uploaded image k local path lena
     const avatarLocalPath= req.files?.avatar[0]?.path;
     const coverImageLocalPath= req.files?.coverImage[0]?.path;
 
-    if(!avatarLocalPath){
+    if(!avatarLocalPath){//Avatar mandatory hai.
         throw new ApiError(400,"vatar file is required");
     }
 
+    //Local image ko Cloudinary par upload karna.
     const avatar= await uploadOnCloudinary(avatarLocalPath);
     const coverImage=await uploadOnCloudinary(coverImageLocalPath);
     if(!avatar){
         throw new ApiError(400,"vatar file is required");    
     }
 
+    /*
+    MongoDB me user document create karna.
+    Why username.toLowerCase()?
+    Sanesh7644
+    Store:
+    sanesh7644
+Consistency maintain hoti hai.
+    */ 
     const user= await User.create({
         fullName,
         avatar:avatar.url,
@@ -50,14 +80,20 @@ const registerUser = asyncHandler(async(req,res)=>{
         password,
         username:username.toLowerCase()
     })
+
+//     Client ko password aur refreshToken nahi bhejna.
+
+// Security Best Practice.
     const createdUser= await User.findById(user._id).select(
         "-password -refereshToken"
         //ye oo chij hai jo hamko nhi chahiye
     )
+    //check karo user successfully create hua ya nahi.
     if(!createdUser){
         throw new ApiError(500,"something want wrong while registering the user");
     }
 
+    //send response
     return res.status(201).json(
         new ApiResponse(200,createdUser,"User registered Successfully")
     )
