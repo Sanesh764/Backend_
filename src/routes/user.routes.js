@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { loginUser, logoutUser, registerUser,refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails, updateUserAvatar, updateUserCoverImage, getUserChanngelProfile, getWatchHistory } from "../controllers/user.controller.js";
 
 import { verifyJwt } from "../middlewares/auth.middleware.js";
