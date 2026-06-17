@@ -184,9 +184,12 @@ const logoutUser=asyncHandler(async(req,res)=>{
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set:{
-                refreshToken:undefined
+            $unset:{//yaha set bhi use kar sakte hai agar errpr aaye to
+                refreshToken:1
             }
+            //$set:{//yaha set bhi use kar sakte hai agar errpr aaye to
+                //refreshToken:undefined
+           // }
         },
         {
             new:true
