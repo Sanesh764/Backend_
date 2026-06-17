@@ -228,10 +228,10 @@ const refreshAccessToken=asyncHandler(async(req,res)=>{
     }
 
     const options={
-        httpsOnly:true,
+        httpOnly:true,
         secure:true
     }
-    const {accessToken,newRefreshToken}= await generateAccessAndRefereshTokens(user._id)
+    const {accessToken, refreshToken: newRefreshToken}= await generateAccessAndRefereshTokens(user._id)
 
     return res.status(200)
     .cookie("accessToken",accessToken,options)
@@ -269,31 +269,31 @@ const changeCurrentPassword=asyncHandler(async(req,res)=>{
 const getCurrentUser=asyncHandler(async(req,res)=>{
     return res
     .status(200)
-    .json(200,req.user,"current user fetched successfullt")
+    .json(new ApiResponse(200,req.user,"current user fetched successfully"))
 })
 
 const updateAccountDetails=asyncHandler(async(req,res)=>{
-    const {fullName,email}=refreshAccessToken.body
+    const {fullName,email}=req.body
 
     if(!fullName || !email){
-        throw new ApiError(400,"All field are required")
+        throw new ApiError(400,"All fields are required")
     }
     
-    const user=User.findByIdAndUpdate(
+    const user=await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set:{
-                fullName,//fullName==fullName ishe bhi likh sakte h
+                fullName,
                 email:email
             }
         },
-        {new:true}
+        {returnDocument: 'after'}
     ).select("-password")
 
     return res
     .status(200)
     .json(
-        new ApiError(200,user,"Account details updated successfully")
+        new ApiResponse(200,user,"Account details updated successfully")
     )
 })
 
@@ -308,14 +308,14 @@ const updateUserAvatar=asyncHandler(async(req,res)=>{
     if(!avatar.url){
         throw new ApiError(400,"error while uploading on avatar") 
     }
-    await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set:{
                 avatar:avatar.url
             }
         },
-        {new :true}
+        {returnDocument: 'after'}
     ).select("-password")//password hata do jab update ho to 
     return res
     .status(200)
@@ -343,7 +343,7 @@ const updateUserCoverImage=asyncHandler(async(req,res)=>{
                 coverImage:coverImage.url
             }
         },
-        {new :true}
+        {returnDocument: 'after'}
     ).select("-password")//password hata do jab update ho to 
 
     return res
@@ -369,7 +369,7 @@ const getUserChanngelProfile=asyncHandler(async(req,res)=>{
         },
         {
             $lookup:{
-                from:"subsciptions",
+                from:"subscriptions",
                 localField:"_id",
                 foreignField:"channel",
                 as:"subscribers"
@@ -377,7 +377,7 @@ const getUserChanngelProfile=asyncHandler(async(req,res)=>{
         },
         {
             $lookup:{
-                from:"subsciptions",
+                from:"subscriptions",
                 localField:"_id",
                 foreignField:"subscriber",
                 as:"subscribedTo"
@@ -394,7 +394,7 @@ const getUserChanngelProfile=asyncHandler(async(req,res)=>{
                 isSubscribed:{
                     $cond:{
                         if:{$in:[req.user?._id,"$subscribers.subscriber"]},
-                        thne:true,
+                        then:true,
                         else:false
                     }
                 }
@@ -408,7 +408,7 @@ const getUserChanngelProfile=asyncHandler(async(req,res)=>{
                 channelsSubscribedToCount:1,
                 isSubscribed:1,
                 avatar:1,
-                coverImgae:1,
+                coverImage:1,
                 email:1,
             }
         }
@@ -427,7 +427,7 @@ const getWatchHistory=asyncHandler(async(req,res)=>{
     const user=await User.aggregate([
         {
             $match:{
-                _id:new mongoose.Types.ObjectId(req,user._id)
+                _id:new mongoose.Types.ObjectId(req.user?._id)
             }
         },
         {
@@ -468,7 +468,7 @@ const getWatchHistory=asyncHandler(async(req,res)=>{
     return res
     .status(200)
     .json(
-        new ApiResponse(200,user[0].watchHistory,"watch history fetch successfully")
+        new ApiResponse(200,user[0]?.watchHistory || [],"watch history fetch successfully")
     )
 })
 
