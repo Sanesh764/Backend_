@@ -9,10 +9,17 @@ app.use(cors({
     credentials: true
 }))
 
-app.use(express.json({limit: "16kb"}))
-app.use(express.urlencoded({extended: true, limit: "16kb"}))
-app.use(express.static("public"))
-app.use(cookieParser())
+app.use(express.json({ limit: "16kb" })) 
+// JSON data ko request body se parse karta hai (API se aane wala JSON data read karne ke liye)
+
+app.use(express.urlencoded({ extended: true, limit: "16kb" })) 
+// Form data (application/x-www-form-urlencoded) ko parse karta hai, extended:true nested objects allow karta hai
+
+app.use(express.static("public")) 
+// Public folder ki files (images, CSS, PDFs, etc.) ko directly browser me access karne deta hai
+
+app.use(cookieParser()) 
+// Browser se aane wali cookies ko parse karke req.cookies me available kar deta hai
 
 
 //routes import

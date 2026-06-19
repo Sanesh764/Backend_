@@ -32,8 +32,6 @@ import fs from "fs";//fs=file sysytem file ko change karna ke liye
 
 
 
-
-
     // Upload an image
     //  const uploadResult = await cloudinary.uploader
     //    .upload(

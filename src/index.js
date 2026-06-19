@@ -9,6 +9,7 @@ import connectDB from "./db/index.js";
 import dns from "dns";
 import { app } from "./app.js";
 
+const port=process.env.PORT || 8000;
 
 dns.setServers([
     '1.1.1.1',
@@ -18,10 +19,12 @@ dns.setServers([
 dotenv.config({
     path:'./.env'
 })
+
+//method 2 to connected datbase
 connectDB()
 .then(()=>{
-    app.listen(process.env.PORT || 8000,()=>{
-        console.log(`⚙️   server is running at port :${process.env.PORT}`);
+    app.listen(port,()=>{
+        console.log(`⚙️   server is running at port :${port}`);
         
     })
 })
@@ -33,10 +36,9 @@ connectDB()
 
 
 //method 1
-// import mongoose from "mongoose";
-// import {DB_NAME} from "./constants.js";
+
 // import express from "express";
-// const app=express();
+
 
 // ( async ()=>{
 //     try{
