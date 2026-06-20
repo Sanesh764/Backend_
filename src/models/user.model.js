@@ -89,4 +89,5 @@ userSchema.methods.generateRefreshToken = function () {
     );
 };
 
-export const User=mongoose.model("User",userSchema); 
+
+export const User=mongoose.model("User",userSchema); //ye User mongodb say direct connect kar sakta hai

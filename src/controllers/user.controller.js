@@ -110,7 +110,7 @@ Consistency maintain hoti hai.
 // Security Best Practice.
     const createdUser= await User.findById(user._id).select(
         "-password -refreshToken"
-        //ye oo chij hai jo hamko nhi chahiye
+        // select ye oo chij hai jo hamko nhi chahiye
     )
     //check karo user successfully create hua ya nahi.
     if(!createdUser){
