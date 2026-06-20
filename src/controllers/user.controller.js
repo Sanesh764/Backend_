@@ -23,7 +23,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
 // Controller function jo registration request handle karta hai.
 const registerUser = asyncHandler(async(req,res)=>{
-    //get user details from frontend
+    //get user details from frontend or postmen
     //validation-not empty
     //cheak if user already exists:username,email
     //cheak for image ,cheak for avatar
