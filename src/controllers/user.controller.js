@@ -72,6 +72,22 @@ username OR email
         avatarLocalPath = req.files.avatar[0].path;
     }
 
+
+// Check karta hai ki avatar file upload hui hai ya nahi.
+//
+// Conditions:
+//
+// 1. req.files exist karta ho
+//    → request ke saath files aayi hain
+//
+// 2. req.files.avatar ek array ho
+//    → avatar field me multiple/single file upload hui hai
+//
+// 3. array me kam se kam 1 file ho
+//    → empty upload na ho
+//
+// Agar teeno conditions true hain,
+// to first uploaded avatar file ka local path le lo.
     let coverImageLocalPath;
     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
         coverImageLocalPath = req.files.coverImage[0].path;
