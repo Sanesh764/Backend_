@@ -51,13 +51,15 @@ const userSchema=new Schema(
 );
 
 // Mongoose 9+ pre-save hook (no next callback needed for async function)
-userSchema.pre("save", async function () {
-    if (!this.isModified("password")) return;
+//password ko encryption kar rahe hai
+userSchema.pre("save", async function () {//yaha pr arrow function ka use mat karna bez arrow function ke pass this ka context nhi hota hai
+    if (!this.isModified("password")) return;//jab password modify hua hai tb hi change karna h otherwise return kar do simple no need to change again
     this.password = await bcrypt.hash(this.password, 10);
 });
 
+//ye code compare karega user ne jo password enter kiya h or jo batabase me password encrypt hai kya dono same hai using bcrypt
 userSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password);
+    return await bcrypt.compare(password, this.password);//ye true or false me return karta hai 
 };
 
 userSchema.methods.generateAccessToken = function () {
